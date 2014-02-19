@@ -277,7 +277,7 @@ class MockRedis(object):
         return old_value
 
     def _set(self, key, value):
-        self.redis[key] = value
+        self.redis[key] = str(value).encode()
 
         # removing the timeout
         if key in self.timeouts:
@@ -431,7 +431,7 @@ class MockRedis(object):
         redis_hash = self._get_hash(hashkey, 'HMSET', create=True)
         for key, value in value.items():
             attribute = str(key)
-            redis_hash[attribute] = str(value)
+            redis_hash[attribute] = str(value).encode()
 
     def hmget(self, hashkey, keys, *args):
         """Emulate hmget."""
@@ -445,7 +445,7 @@ class MockRedis(object):
 
         redis_hash = self._get_hash(hashkey, 'HSET', create=True)
         attribute = str(attribute)
-        redis_hash[attribute] = str(value)
+        redis_hash[attribute] = str(value).encode()
 
     def hsetnx(self, hashkey, attribute, value):
         """Emulate hsetnx."""
@@ -772,7 +772,7 @@ class MockRedis(object):
         """Emulate sadd."""
         redis_set = self._get_set(key, 'SADD', create=True)
         before_count = len(redis_set)
-        redis_set.update(map(str, values))
+        redis_set.update(map(lambda x: x.encode(), map(str, values)))
         after_count = len(redis_set)
         return after_count - before_count
 

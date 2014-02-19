@@ -36,17 +36,14 @@ class TestRedis(object):
 
         for value in values:
             self.redis.set('key', value)
-            eq_(str(value),
-                self.redis.get('key'),
-                "redis.get")
+            #eq_(str(value).encode(), self.redis.get('key'), "redis.get")
+            eq_(str(value).encode(), self.redis.get('key'))
 
             self.redis.hset('hkey', 'item', value)
-            eq_(str(value),
-                self.redis.hget('hkey', 'item'))
+            eq_(str(value).encode(), self.redis.hget('hkey', 'item'))
 
             self.redis.sadd('skey', value)
-            eq_(set([str(value)]),
-                self.redis.smembers('skey'))
+            eq_(set([str(value).encode()]), self.redis.smembers('skey'))
 
             self.redis.flushdb()
 
@@ -181,7 +178,7 @@ class TestRedis(object):
         with assert_raises(KeyError):
             self.redis["foo"]
         self.redis.set("foo", "bar")
-        eq_("bar", self.redis["foo"])
+        eq_(b"bar", self.redis["foo"])
         self.redis.delete("foo")
         with assert_raises(KeyError):
             self.redis["foo"]
@@ -189,11 +186,11 @@ class TestRedis(object):
     def test_setitem(self):
         eq_(None, self.redis.get("foo"))
         self.redis["foo"] = "bar"
-        eq_("bar", self.redis.get("foo"))
+        eq_(b"bar", self.redis.get("foo"))
 
     def test_delitem(self):
         self.redis["foo"] = "bar"
-        eq_("bar", self.redis["foo"])
+        eq_(b"bar", self.redis["foo"])
         del self.redis["foo"]
         eq_(None, self.redis.get("foo"))
         # redispy does not correctly raise KeyError here, so we don't either
