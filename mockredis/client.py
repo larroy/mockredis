@@ -277,7 +277,7 @@ class MockRedis(object):
         return old_value
 
     def _set(self, key, value):
-        self.redis[key] = str(value)
+        self.redis[key] = value
 
         # removing the timeout
         if key in self.timeouts:
